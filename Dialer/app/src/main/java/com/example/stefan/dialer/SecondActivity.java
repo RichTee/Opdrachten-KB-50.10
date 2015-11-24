@@ -8,12 +8,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
+
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+import com.google.i18n.phonenumbers.*;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,36 +33,18 @@ public class SecondActivity extends AppCompatActivity {
         number = getIntent().getStringExtra("number");
         TextView lblNumber = (TextView) findViewById(R.id.lblNumber);
         lblNumber.setText(number);
+        testbeetje(number);
+    }
 
-        //Split up string and get country code
-        /*if (number != null) {
-            TextView lbl = (TextView) findViewById(R.id.lblCountry);
-            if(number.length() > 10){
-                String numberCode = number.substring(0, number.length() - 8);
-                String countryCode = getKeyForValue(numberCode);
-                if (countryCode == null) {
-                    lbl.setText("Country code not found.");
-                } else {
-                    lbl.setText(countryCode);
-                }
-            }
-            else{
-                lbl.setText("The number you i insert is not long enough");
-            }
-
-        } else {
-            //Return to MainActivity
-            Intent returnIntent = new Intent();
-            returnIntent.putExtra("result", number);
-            setResult(RESULT_OK, returnIntent);
-            finish();
-        }*/
+    private void testbeetje(String number) {
         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
         PhoneNumber numberProto = null;
         try {
             numberProto = phoneUtil.parse(number, "");
-            System.out.println("Number is of region - " + phoneUtil.getRegionCodeForNumber(numberProto));
-            System.out.println("Is the input number valid - " + (phoneUtil.isValidNumber(numberProto) == true ? "Yes" : "No"));
+            TextView country = (TextView) findViewById(R.id.lblCountry);
+            country.setText("Number is of region - " + phoneUtil.getRegionCodeForNumber(numberProto));
+            TextView valid = (TextView) findViewById(R.id.lblValid);
+            valid.setText("Is the input number valid - " + (phoneUtil.isValidNumber(numberProto) == true ? "Yes" : "No"));
         } catch (NumberParseException e) {
             System.err.println("NumberParseException was thrown: " + e.toString());
         }
@@ -74,11 +59,13 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     public void call(View v) {
-        Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + number));
-        if (checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+        Intent intentCall = new Intent(Intent.ACTION_DIAL);
+        try {
 
-            startActivity(callIntent);
+            intentCall.setData(Uri.parse("tel:" + number));
+            startActivity(intentCall);
+        } catch (IllegalStateException ex) {
+            Toast.makeText(getApplicationContext(), "This is not an allowed phonenumber.", Toast.LENGTH_SHORT);
         }
     }
 
