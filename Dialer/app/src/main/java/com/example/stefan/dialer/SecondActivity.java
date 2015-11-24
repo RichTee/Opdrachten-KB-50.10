@@ -1,21 +1,17 @@
 package com.example.stefan.dialer;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
-import com.google.i18n.phonenumbers.*;
 
 
 import java.util.HashMap;
@@ -33,10 +29,10 @@ public class SecondActivity extends AppCompatActivity {
         number = getIntent().getStringExtra("number");
         TextView lblNumber = (TextView) findViewById(R.id.lblNumber);
         lblNumber.setText(number);
-        testbeetje(number);
+        getPhoneDetails(number);
     }
 
-    private void testbeetje(String number) {
+    private void getPhoneDetails(String number) {
         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
         PhoneNumber numberProto = null;
         try {
