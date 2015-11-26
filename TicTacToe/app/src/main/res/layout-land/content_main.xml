@@ -9,112 +9,126 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main" tools:context=".MainActivity">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button1"
-        android:layout_marginLeft="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp"
-        android:onClick="setChar"  />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button2"
-        android:layout_alignTop="@+id/button1"
-        android:layout_alignLeft="@+id/button8"
-        android:layout_alignStart="@+id/button8"
-        android:onClick="setChar"  />
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.7">
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_margin="20dp">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button1"
+                    android:onClick="setChar"
+                    android:layout_weight="0.3"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button3"
-        android:layout_above="@+id/button4"
-        android:layout_centerHorizontal="true"
-        android:onClick="setChar" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button2"
+                    android:onClick="setChar"
+                    android:layout_weight="0.3"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button4"
-        android:layout_marginTop="30dp"
-        android:layout_below="@+id/button1"
-        android:layout_alignLeft="@+id/button1"
-        android:layout_alignStart="@+id/button1"
-        android:onClick="setChar"  />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button3"
+                    android:onClick="setChar"
+                    android:layout_weight="0.3" />
+            </TableRow>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button5"
-        android:layout_alignTop="@+id/button4"
-        android:layout_alignLeft="@+id/button2"
-        android:layout_alignStart="@+id/button2"
-        android:onClick="setChar"  />
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_margin="20dp">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button4"
+                    android:onClick="setChar"
+                    android:layout_weight="0.3" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button6"
-        android:layout_alignBottom="@+id/button5"
-        android:layout_alignRight="@+id/button3"
-        android:layout_alignEnd="@+id/button3"
-        android:onClick="setChar"  />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button5"
+                    android:onClick="setChar"
+                    android:layout_weight="0.3" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button7"
-        android:layout_below="@+id/button4"
-        android:layout_alignLeft="@+id/button4"
-        android:layout_alignStart="@+id/button4"
-        android:layout_marginTop="30dp"
-        android:onClick="setChar"  />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button6"
+                    android:onClick="setChar"
+                    android:layout_weight="0.3" />
+            </TableRow>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button8"
-        android:layout_alignTop="@+id/button7"
-        android:layout_toLeftOf="@+id/button9"
-        android:layout_toStartOf="@+id/button9"
-        android:layout_marginRight="22dp"
-        android:layout_marginEnd="22dp"
-        android:onClick="setChar"  />
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_margin="20dp">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button7"
+                    android:onClick="setChar"
+                    android:layout_weight="0.3" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button9"
-        android:layout_alignBottom="@+id/button8"
-        android:layout_alignRight="@+id/button6"
-        android:layout_alignEnd="@+id/button6"
-        android:onClick="setChar"  />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button8"
+                    android:onClick="setChar"
+                    android:layout_weight="0.3" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Reset game"
-        android:id="@+id/buttonReset"
-        android:layout_above="@+id/button4"
-        android:layout_toRightOf="@+id/button3"
-        android:layout_toEndOf="@+id/button3"
-        android:layout_marginLeft="47dp"
-        android:layout_marginStart="47dp"
-        android:onClick="reset" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button9"
+                    android:onClick="setChar"
+                    android:layout_weight="0.3" />
+            </TableRow>
+        </TableLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/lblPlayer"
-        android:layout_below="@+id/button7"
-        android:layout_alignLeft="@+id/button7"
-        android:layout_alignStart="@+id/button7"
-        android:layout_marginTop="25dp"
-        android:text="Player 1 is aan zet." />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="20dp"
+            android:layout_weight="0.3">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lblPlayer"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Player 1 is aan zet." />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonReset"
+                android:text="Reset game"
+                android:layout_gravity="center"
+                android:onClick="reset"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonMenu"
+                android:text="Menu"
+                android:layout_gravity="center"
+                android:onClick="menu"/>
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>

@@ -11,20 +11,24 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    enum State{Blank, X, O}
     //Current state
-    private State state = State.X;
+    private String state = "X";
     //Count moves
     private int moveCount = 0;
+    //easy, hard, multiplayer
+    private String mode;
 
     //Create 2d array
-    private State[][] board = new State[][]{
-        { State.Blank, State.Blank, State.Blank },
-        { State.Blank, State.Blank, State.Blank },
-        { State.Blank, State.Blank, State.Blank }
+    private String[][] board = new String[][]{
+        { "Blank", "Blank", "Blank" },
+        { "Blank", "Blank", "Blank" },
+        { "Blank", "Blank", "Blank" }
     };
 
     @Override
@@ -43,7 +47,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mode = getIntent().getStringExtra("mode");
         //Set board
+        if (savedInstanceState != null){
+            for (int x = 0; x < 3; x++) {
+                String[] row = savedInstanceState.getStringArray("board" + x);
+                for (int y = 0; y < row.length; y++) {
+                    board[x][y] = row[y];
+                }
+            }
+        }
         setBoard();
     }
 
@@ -69,6 +82,13 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        for (int i = 0; i < board.length; i++) {
+            savedInstanceState.putStringArray("board" + i, board[i]);
+        }
+    }
+
     //Reset Buttons, movecount, Current player and board.
     public void reset(View v){
         //Set all buttons empty
@@ -88,29 +108,92 @@ public class MainActivity extends AppCompatActivity {
         clearBoard();
     }
 
+    //Back button
+    public void menu(View v){
+        finish();
+    }
+
+    //Restart board
     public void clearBoard(){
         for (int x = 0; x < board.length; x++) {
             for (int y = 0; y < board[0].length; y++) {
-               board[x][y] = State.Blank;
+               board[x][y] = "Blank";
             }
         }
     }
 
+    //Player Move
     public void setChar(View v){
-        int xloc = 0;
-        int yloc = 0;
-
         TextView text = (TextView) findViewById(R.id.lblPlayer);
-        if(state == State.X) {
+        if(state == "X") {
             setX(v.getId());
             text.setText("Player 1 is aan zet.");
-        } else if (state == State.O){
+        } else if (state == "O"){
             setO(v.getId());
             text.setText("Player 2 is aan zet.");
         } else{
             System.out.println("Geen state bekend.");
         }
+        if(!fillMove(v)) {
+            changeState(v);
+        }
+        moveCount++;
+    }
 
+    //BOT Move
+    public void randomMove(View v){
+        Random rn = new Random();
+        int nummer = rn.nextInt(9)+1;
+        int id = getResources().getIdentifier("button"+nummer, "id", getPackageName());
+        Button button = (Button)findViewById(id);
+        //Check state is blank
+        int xloc = 0;
+        int yloc = 0;
+        switch (button.getId()) {
+            case R.id.button1:
+                xloc = 0; yloc = 0; break;
+            case R.id.button2:
+                xloc = 0; yloc = 1; break;
+            case R.id.button3:
+                xloc = 0; yloc = 2; break;
+            case R.id.button4:
+                xloc = 1; yloc = 0; break;
+            case R.id.button5:
+                xloc = 1; yloc = 1; break;
+            case R.id.button6:
+                xloc = 1; yloc = 2; break;
+            case R.id.button7:
+                xloc = 2; yloc = 0; break;
+            case R.id.button8:
+                xloc = 2; yloc = 1; break;
+            case R.id.button9:
+                xloc = 2; yloc = 2; break;
+        }
+        if(board[xloc][yloc] == "Blank"){
+            setChar(button);
+        } else{
+            randomMove(v);
+        }
+    }
+
+    //Set x in button
+    public void setX(int id){
+        Button button = (Button)findViewById(id);
+        button.setText("X");
+        button.setEnabled(false);
+    }
+
+    //Set O in button
+    public void setO(int id){
+        Button button = (Button)findViewById(id);
+        button.setText("O");
+        button.setEnabled(false);
+    }
+
+    //Fill board with chosen position
+    public boolean fillMove(View v){
+        int xloc = 0;
+        int yloc = 0;
         //Fill 2d array
         switch (v.getId()) {
             case R.id.button1:
@@ -132,50 +215,20 @@ public class MainActivity extends AppCompatActivity {
             case R.id.button9:
                 xloc = 2; yloc = 2; break;
         }
-
         board[xloc][yloc] = state;
-        checkWin(xloc, yloc, state);
-        changeState();
-        moveCount++;
-    }
-
-
-    //Check if 2d array is filled correctly.
-    public void showBoard(){
-        for (int x = 0; x < board.length; x++) {
-            for (int y = 0; y < board[0].length; y++) {
-                System.out.println("x=" + x + " y=" + y + " state="+board[x][y]);
-            }
-        }
-    }
-
-    //Check if 2d array is filled correctly.
-    public void setBoard(){
-        System.out.println("Create board");
-        showBoard();
-        int number = 0;
-        for (int x = 0; x < board.length; x++) {
-            for (int y = 0; y < board[0].length; y++) {
-                if(board[x][y] == State.X){
-                    setX(number);
-                }else if(board[x][y] == State.O) {
-                    setO(number);
-                } else{
-                    //Niks
-                }
-                number++;
-            }
-        }
+        if(checkWin(xloc, yloc, state)) return true;
+        else return false;
     }
 
     //Check Vertical, Check Horizontal, Check diogo signal, check anti diogo signal, check draw
-    public void checkWin(int x, int y, State state){
+    public boolean checkWin(int x, int y, String state){
         //check Vertical
         for(int i = 0; i < board.length; i++){
             if(board[x][i] != state)
                 break;
             if(i == board.length-1){
                 playerWins(state);
+                return true;
             }
         }
 
@@ -185,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             if(i == board.length-1){
                 playerWins(state);
+                return true;
             }
         }
 
@@ -195,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 if(i == board.length-1){
                     playerWins(state);
+                    return true;
                 }
             }
         }
@@ -205,41 +260,43 @@ public class MainActivity extends AppCompatActivity {
                 break;
             if(i == board.length-1){
                 playerWins(state);
+                return true;
             }
         }
 
         //check draw
         if(moveCount == ((board.length*board[0].length) -1)){
-            playerWins(State.Blank);
+            playerWins("Blank");
+            return true;
         }
+        return false;
     }
 
     //Change state of current user
-    public void changeState(){
-        if(state == State.X){
-            state = State.O;
-        } else if (state ==  State.O){
-            state = State.X;
+    public void changeState(View v){
+        if(state == "X"){
+            state = "O";
+            setAiMove(v);
+        } else if (state ==  "O"){
+            state = "X";
         } else {
             System.out.println("Fout! geen state bekend");
         }
+
+
     }
 
-    //Set x in button
-    public void setX(int id){
-        Button button = (Button)findViewById(id);
-        button.setText("X");
-        button.setEnabled(false);
+    public void setAiMove(View v){
+        if(mode.equalsIgnoreCase("singleplayer1")){
+            randomMove(v);
+        }
+        if(mode.equalsIgnoreCase("singleplayer2")){
+            System.out.println("Hard bot is nu aan zet.");
+        }
     }
 
-    //Set O in button
-    public void setO(int id){
-        Button button = (Button)findViewById(id);
-        button.setText("O");
-        button.setEnabled(false);
-    }
-
-    public void playerWins(State state){
+    //End of game
+    public void playerWins(String state){
         //Diable buttons
         for (int i = 1; i < 10; i++) {
             int id = getResources().getIdentifier("button"+i, "id", getPackageName());
@@ -248,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Show Message
-        if(state == State.Blank){
+        if(state == "Blank"){
             TextView text = (TextView) findViewById(R.id.lblPlayer);
             text.setText("Its a draw. Press restart game to play again.");
         } else{
@@ -256,4 +313,33 @@ public class MainActivity extends AppCompatActivity {
             text.setText(state + " wins. Press restart game to play again.");
         }
     }
+
+    //Check if 2d array is filled correctly.
+    public void setBoard(){
+        showBoard();
+        int number = 1;
+        for (int x = 0; x < board.length; x++) {
+            for (int y = 0; y < board[0].length; y++) {
+                int id = getResources().getIdentifier("button"+number, "id", getPackageName());
+                if(board[x][y] == "X"){
+                    setX(id);
+                }else if(board[x][y] == "O") {
+                    setO(id);
+                } else{
+                    //Niks
+                }
+                number++;
+            }
+        }
+    }
+
+    //Check if 2d array is filled correctly.
+    public void showBoard(){
+        for (int x = 0; x < board.length; x++) {
+            for (int y = 0; y < board[0].length; y++) {
+                System.out.println("x=" + x + " y=" + y + " state="+board[x][y]);
+            }
+        }
+    }
+
 }
