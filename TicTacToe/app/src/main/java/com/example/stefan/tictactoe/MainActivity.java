@@ -1,6 +1,7 @@
 package com.example.stefan.tictactoe;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,21 +15,25 @@ import android.widget.TextView;
 import java.io.Serializable;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     //Current state
-    private String state = "X";
+    private CELL_STATE state = CELL_STATE.X;
     //Count moves
     private int moveCount = 0;
-    //easy, hard, multiplayer
+    //Easy(SP), Hard(SP), MultiPlayer
     private String mode;
 
     //Create 2d array
-    private String[][] board = new String[][]{
-        { "Blank", "Blank", "Blank" },
-        { "Blank", "Blank", "Blank" },
-        { "Blank", "Blank", "Blank" }
+    private CELL_STATE[][] board = new CELL_STATE[][]{
+            //  0                   1               2
+        { CELL_STATE.BLANK, CELL_STATE.BLANK, CELL_STATE.BLANK },   // 0
+        { CELL_STATE.BLANK, CELL_STATE.BLANK, CELL_STATE.BLANK },   // 1
+        { CELL_STATE.BLANK, CELL_STATE.BLANK, CELL_STATE.BLANK }    // 2
     };
 
     @Override
@@ -38,21 +43,12 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         mode = getIntent().getStringExtra("mode");
         //Set board
         if (savedInstanceState != null){
-            for (int x = 0; x < 3; x++) {
-                String[] row = savedInstanceState.getStringArray("board" + x);
-                for (int y = 0; y < row.length; y++) {
+            for (int x = 0; x < board[0].length; x++) {
+                CELL_STATE[] row = (CELL_STATE[]) savedInstanceState.getSerializable("board" + x);
+                for (int y = 0; y < board.length; y++) {
                     board[x][y] = row[y];
                 }
             }
@@ -67,25 +63,10 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         for (int i = 0; i < board.length; i++) {
-            savedInstanceState.putStringArray("board" + i, board[i]);
+            savedInstanceState.putSerializable("board" + i, board[i]);
         }
     }
 
@@ -100,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         }
         //Set move to player 1
         TextView text = (TextView) findViewById(R.id.lblPlayer);
-        text.setText("Player 1 is aan zet.");
+        text.setText(String.format(getResources().getString(R.string.player_turn), 1));
         //Move count 0
         moveCount = 0;
 
@@ -117,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
     public void clearBoard(){
         for (int x = 0; x < board.length; x++) {
             for (int y = 0; y < board[0].length; y++) {
-               board[x][y] = "Blank";
+               board[x][y] = CELL_STATE.BLANK;
             }
         }
     }
@@ -125,12 +106,12 @@ public class MainActivity extends AppCompatActivity {
     //Player Move
     public void setChar(View v){
         TextView text = (TextView) findViewById(R.id.lblPlayer);
-        if(state == "X") {
+        if(state == CELL_STATE.X) {
             setX(v.getId());
-            text.setText("Player 1 is aan zet.");
-        } else if (state == "O"){
+            text.setText(String.format(getResources().getString(R.string.player_turn), 1));
+        } else if (state == CELL_STATE.O){
             setO(v.getId());
-            text.setText("Player 2 is aan zet.");
+            text.setText(String.format(getResources().getString(R.string.player_turn), 2));
         } else{
             System.out.println("Geen state bekend.");
         }
@@ -169,11 +150,100 @@ public class MainActivity extends AppCompatActivity {
             case R.id.button9:
                 xloc = 2; yloc = 2; break;
         }
-        if(board[xloc][yloc] == "Blank"){
+        if(board[xloc][yloc] == CELL_STATE.BLANK){
             setChar(button);
         } else{
             randomMove(v);
         }
+    }
+
+    // BOT Calculated Move
+    private void calculatedMove(View v) {
+        // TODO: Check middle, Check Corner, Check Block
+        int min = 0;
+        int max = board.length;
+
+        if(checkAiWinCondition())
+            return;
+
+        if(checkMid())
+            return;
+
+        // Check block before checking corners
+        //if(checkBlock())
+        //    return;
+
+        if(checkCorners())
+            return;
+
+        randomMove(v);
+    }
+
+    // Check win condition for Smart Bot AI
+    private boolean checkAiWinCondition() {
+        // TODO: Have the AI chase a win if he has 2 in a row.
+        return false;
+    }
+
+    // Check middle for Smart Bot AI
+    private boolean checkMid() {
+        if(board[1][1] == CELL_STATE.BLANK) {
+            setChar(findViewById(R.id.button5)); // 5 is mid, should find with specified enum name instead
+            return true;
+        }
+        return false;
+    }
+
+    // Check block for Smart Bot AI
+    private boolean checkBlock() {
+        // TODO: Have the AI block if the player has a possible win condition.
+        return true;
+    }
+
+    // Check corners for Smart Bot AI
+    private boolean checkCorners() {
+        // Check corners
+        //      top-left                            top-right                           bottom-left                         bottom-right
+        if(board[0][0] == CELL_STATE.BLANK || board[0][2] == CELL_STATE.BLANK || board[2][0] == CELL_STATE.BLANK || board[2][2] == CELL_STATE.BLANK){
+            Random rand = new Random();
+            int xLoc = 0, yLoc = 0;
+            boolean recheck = true;
+            while(recheck) {
+                int number = rand.nextInt(4); // 0 - 3
+                // Usage of a map with KeyValuePair to have a pre-determined name and
+                // location would be better for expansion and maintainability.
+                switch (number) {
+                    case 0:
+                        if (board[xLoc][yLoc] == CELL_STATE.BLANK) {
+                            setChar(findViewById(R.id.button1));
+                            recheck = false;
+                            return true;
+                        }
+                    case 1:
+                        if(board[xLoc][yLoc + 2] == CELL_STATE.BLANK) {
+                            setChar(findViewById(R.id.button3));
+                            recheck = false;
+                            return true;
+                        }
+                    case 2:
+                        if(board[xLoc + 2][yLoc] == CELL_STATE.BLANK) {
+                            setChar(findViewById(R.id.button7));
+                            recheck = false;
+                            return true;
+                        }
+                    case 3:
+                        if(board[xLoc + 2][yLoc + 2] == CELL_STATE.BLANK) {
+                            setChar(findViewById(R.id.button9));
+                            recheck = false;
+                            return true;
+                        }
+                    default:
+                        break; // Something gone wrong
+                }
+            }
+        }
+
+        return false;
     }
 
     //Set x in button
@@ -220,8 +290,8 @@ public class MainActivity extends AppCompatActivity {
         else return false;
     }
 
-    //Check Vertical, Check Horizontal, Check diogo signal, check anti diogo signal, check draw
-    public boolean checkWin(int x, int y, String state){
+    //Check Vertical, Check Horizontal, Check diag signal, check anti diag signal, check draw
+    public boolean checkWin(int x, int y, CELL_STATE state){
         //check Vertical
         for(int i = 0; i < board.length; i++){
             if(board[x][i] != state)
@@ -266,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
 
         //check draw
         if(moveCount == ((board.length*board[0].length) -1)){
-            playerWins("Blank");
+            playerWins(CELL_STATE.BLANK);
             return true;
         }
         return false;
@@ -274,11 +344,11 @@ public class MainActivity extends AppCompatActivity {
 
     //Change state of current user
     public void changeState(View v){
-        if(state == "X"){
-            state = "O";
+        if(state == CELL_STATE.X){
+            state = CELL_STATE.O;
             setAiMove(v);
-        } else if (state ==  "O"){
-            state = "X";
+        } else if (state ==  CELL_STATE.O){
+            state = CELL_STATE.X;
         } else {
             System.out.println("Fout! geen state bekend");
         }
@@ -287,30 +357,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setAiMove(View v){
+        TextView text = (TextView) findViewById(R.id.lblPlayer);
         if(mode.equalsIgnoreCase("singleplayer1")){
             randomMove(v);
+            text.setText(String.format(getResources().getString(R.string.player_turn), 1));
         }
         if(mode.equalsIgnoreCase("singleplayer2")){
             System.out.println("Hard bot is nu aan zet.");
+            calculatedMove(v);
+            text.setText(String.format(getResources().getString(R.string.player_turn), 1));
         }
     }
 
     //End of game
-    public void playerWins(String state){
-        //Diable buttons
+    public void playerWins(CELL_STATE state){
+        //Disable buttons
         for (int i = 1; i < 10; i++) {
-            int id = getResources().getIdentifier("button"+i, "id", getPackageName());
+            int id = getResources().getIdentifier("button" + i, "id", getPackageName());
             Button button = (Button) findViewById(id);
             button.setEnabled(false);
         }
 
         //Show Message
-        if(state == "Blank"){
+        if(state == CELL_STATE.BLANK){
             TextView text = (TextView) findViewById(R.id.lblPlayer);
             text.setText("Its a draw. Press restart game to play again.");
         } else{
             TextView text = (TextView) findViewById(R.id.lblPlayer);
-            text.setText(state + " wins. Press restart game to play again.");
+            text.setText(state.toString() + " wins. Press restart game to play again."); // Only works for player.
+            System.out.println("Reached");
         }
     }
 
@@ -321,12 +396,12 @@ public class MainActivity extends AppCompatActivity {
         for (int x = 0; x < board.length; x++) {
             for (int y = 0; y < board[0].length; y++) {
                 int id = getResources().getIdentifier("button"+number, "id", getPackageName());
-                if(board[x][y] == "X"){
+                if(board[x][y] == CELL_STATE.X){
                     setX(id);
-                }else if(board[x][y] == "O") {
+                }else if(board[x][y] == CELL_STATE.O) {
                     setO(id);
                 } else{
-                    //Niks
+                    //Niks (TODO: Handle exception if here, otherwise remove else statement if impossible)
                 }
                 number++;
             }
@@ -342,4 +417,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private enum GAME_MODE { SP_EASY, SP_HARD, MULTIPLAYER;}
+
+    private enum CELL_STATE {
+        BLANK,
+        X,
+        O;      // Not a number
+    }
 }
