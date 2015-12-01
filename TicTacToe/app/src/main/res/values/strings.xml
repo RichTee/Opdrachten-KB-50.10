@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">TicTacToe</string>
     <string name="action_settings">Settings</string>
+    <string name="sp_easy">Singleplayer (Easy)</string>
+    <string name="sp_hard">Singleplayer (Hard)</string>
+    <string name="reset_game">Reset Game</string>
     <string name="player_turn">Player %1$d\'s turn</string>
+    <string name="draw">It\'s a draw. Press restart game to play again.</string>
+    <string name="won">%1$s wins. Press restart game to play again</string>
 </resources>

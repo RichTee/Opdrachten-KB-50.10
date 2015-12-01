@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Boter-kaas-en-eieren</string>
+    <string name="action_settings">Instellingen</string>
+    <string name="sp_easy">Singleplayer (Makkelijk)</string>
+    <string name="sp_hard">Singleplayer (Moeilijk)</string>
+    <string name="reset_game">Reset Spel</string>
+    <string name="player_turn">Speler %1$d is aan zet</string>
+    <string name="draw">Het is gelijk spel! Klik reset om opnieuw te spelen</string>
+    <string name="won">%1$s wint. Klik reset om opnieuw te spelen</string>
+</resources>

@@ -31,8 +31,8 @@
             android:layout_weight="0.2"/>
 
         <Button
-            android:text="Singleplayer (Easy)"
-            android:layout_width="wrap_content"
+            android:text="@string/sp_easy"
+            android:layout_width="210dp"
             android:layout_height="wrap_content"
             android:id="@+id/singleplayer1"
             android:onClick="startMode"
@@ -41,8 +41,8 @@
             android:layout_weight="0.2"/>
 
         <Button
-            android:text="Singleplayer (Hard)"
-            android:layout_width="wrap_content"
+            android:text="@string/sp_hard"
+            android:layout_width="210dp"
             android:layout_height="wrap_content"
             android:id="@+id/singleplayer2"
             android:onClick="startMode"

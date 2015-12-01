@@ -54,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         setBoard();
+
+        //hacky TODO: Naam gelijk goed weergeven bij startup zonder code.
+        TextView text = (TextView) findViewById(R.id.lblPlayer);
+        text.setText(String.format(getResources().getString(R.string.player_turn), 1));
     }
 
     @Override
@@ -381,10 +385,10 @@ public class MainActivity extends AppCompatActivity {
         //Show Message
         if(state == CELL_STATE.BLANK){
             TextView text = (TextView) findViewById(R.id.lblPlayer);
-            text.setText("Its a draw. Press restart game to play again.");
+            text.setText(String.format(getResources().getString(R.string.draw)));
         } else{
             TextView text = (TextView) findViewById(R.id.lblPlayer);
-            text.setText(state.toString() + " wins. Press restart game to play again."); // Only works for player.
+            text.setText(String.format(getResources().getString(R.string.won), state.toString())); // Only works for player.
             System.out.println("Reached");
         }
     }
