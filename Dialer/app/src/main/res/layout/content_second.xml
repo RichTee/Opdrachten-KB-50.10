@@ -54,4 +54,14 @@
         android:layout_marginTop="47dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Valid number"
+        android:id="@+id/lblValid"
+        android:layout_above="@+id/buttonCall"
+        android:layout_alignLeft="@+id/lblCountry"
+        android:layout_alignStart="@+id/lblCountry"
+        android:layout_marginBottom="22dp" />
 </RelativeLayout>
